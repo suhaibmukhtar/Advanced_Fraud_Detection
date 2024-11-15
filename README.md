@@ -159,7 +159,6 @@ Custom exceptions are handled using exception.py. The sys.exc_info() function is
     <li>Push the code on the remote repository</li>
         git push origin main
 </ol>
->>>>>>> Stashed changes
 <h2> Continue............</h2>
 </body>
 </html>
