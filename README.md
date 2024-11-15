@@ -1,7 +1,7 @@
 <h1>Advanced Credit Card Fraud Detection</h1>
 <h3>Overview of project<h3>
 This project focuses on developing a robust system for detecting credit card fraud using advanced ensemble techniques. The system addresses critical challenges such as data imbalance, ensuring unbiased predictions and enhanced generalizability. The project is structured with modular components for data ingestion, data transformation, model training, and evaluation, emphasizing scalability and maintainability.</p>
-<p> To enhance interpretability, the project incorporates SHAP (SHapley Additive exPlanations) and feature-importance analysis, enabling insights into the key features driving the model's predictions. The deployment of the model will be carried out using Flask and Docker, ensuring seamless integration with other applications and providing a scalable solution for real-world implementation.
+To enhance interpretability, the project incorporates SHAP (SHapley Additive exPlanations) and feature-importance analysis, enabling insights into the key features driving the model's predictions. The deployment of the model will be carried out using Flask and Docker, ensuring seamless integration with other applications and providing a scalable solution for real-world implementation.
 <h2>Project Structure</h2>
 src/ <br>
 ├── __init__.py              # Initializes the package<br>
