@@ -68,6 +68,7 @@ git config --global user.email "your-email"
         <pre>git push origin main</pre>
     </ol>
 
+<<<<<<< Updated upstream
 <h4>3. Install Required Libraries</h4>
 <p>Create requirements.txt with dependencies</p>
 pandas
@@ -135,3 +136,32 @@ Custom exceptions are handled using exception.py. The sys.exc_info() function is
 <h2> Continue............</h2>
 </body>
 </html>
+=======
+<h2>Installation</h1>
+<h4>1. Set Up Virtual Environment</h4>
+<ol>
+    <ul>Navigate to the desired folder in your terminal:</ul>
+    conda create -p venv python==3.9.1 -y
+    <ul>Activate the virtual environment</ul>
+    conda activate "path-to-venv"
+</ol>
+<h4>2. Sync with GitHub</h4>
+<ol>
+    <li>Create a GitHub repository.</li>
+    <li>Initialize Git in your local project folder:</li>
+        git init
+        git add . #addes files to stagging area
+    <li>Add configuration variable such as name and email</li>
+        git config --global user.name "your-name"
+        git config --global user.email "your-email"
+    <li>Add a .gitignore file from GitHub's template for Python.(using interface)<li>
+    <li>Commit files so that they are added to local reposity</li>
+        git commit -m "Initial commit"
+    <li>Copy the https url from the Github repository and add that as origin</li>
+        git remote add origin https://github.com/your-username/your-repo-name.git
+    <li>Select the branch to push to</li>
+        git branch -M main #if we have to push to main branch
+    <li>Push the code on the remote repository</li>
+        git push origin main
+</ol>
+>>>>>>> Stashed changes
