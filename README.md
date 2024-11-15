@@ -105,6 +105,30 @@ setup(
     install_requires=get_requirements("requirements.txt")
 )
 </pre>
+<h4>Logging</h4>
+Logs are generated using Python's logging module, with a separate logs directory created dynamically. The log file name is based on the current date and time. Example logging configuration is in logger.py:<br>
+<pre>
+    import logging
+import os
+from datetime import datetime
 
+LOG_FILE = f"{datetime.now().strftime('%m_%d-%Y_%H_%M_%S')}.log"
+logs_path = os.path.join(os.getcwd(), "logs")
+os.makedirs(logs_path, exist_ok=True)
+
+LOG_FILE_PATH = os.path.join(logs_path, LOG_FILE)
+
+logging.basicConfig(
+    filename=LOG_FILE_PATH, 
+    format="[ %(asctime)s ] %(lineno)d %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+
+if __name__ == "__main__":
+    logging.info("This is a log message")
+</pre>
+
+<h4>Exception Handling<h4>
+<p>Custom exceptions are handled using exception.py. The sys.exc_info() function is used to capture exception details such as type, message, and traceback for debugging.</p>
 </body>
 </html>
