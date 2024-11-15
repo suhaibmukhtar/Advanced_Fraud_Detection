@@ -108,7 +108,7 @@ setup(
 <h4>Logging</h4>
 Logs are generated using Python's logging module, with a separate logs directory created dynamically. The log file name is based on the current date and time. Example logging configuration is in logger.py:<br>
 <pre>
-    import logging
+import logging
 import os
 from datetime import datetime
 
@@ -129,6 +129,6 @@ if __name__ == "__main__":
 </pre>
 
 <h4>Exception Handling<h4>
-<p>Custom exceptions are handled using exception.py. The sys.exc_info() function is used to capture exception details such as type, message, and traceback for debugging.</p>
+Custom exceptions are handled using exception.py. The sys.exc_info() function is used to capture exception details such as type, message, and traceback for debugging.
 </body>
 </html>
