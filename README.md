@@ -22,19 +22,19 @@
     <h2>Project Structure</h2>
     <pre>
 src/
-├── __init__.py              # Initializes the package
-├── components/              # Contains modular components
-│   ├── __init__.py          # Initializes the components package
-│   ├── data_ingestion.py    # Handles data loading from sources
-│   ├── data_transformation.py # Prepares and processes data (encoding, train-test split)
-│   ├── model_trainer.py     # Develops, trains, and evaluates the model
-├── pipeline/                # Orchestrates workflows
-│   ├── __init__.py          # Initializes the pipeline package
-│   ├── train_pipeline.py    # Executes training pipeline
-│   ├── prediction_pipeline.py # Executes prediction pipeline
-├── logger.py                # Tracks logs for debugging and analysis
-├── exception.py             # Handles custom exceptions
-├── utils.py                 # Contains shared utility functions
+├── __init__.py              # Initializes the package<br>
+├── components/              # Contains modular components<br>
+│   ├── __init__.py          # Initializes the components package<br>
+│   ├── data_ingestion.py    # Handles data loading from sources<br>
+│   ├── data_transformation.py # Prepares and processes data (encoding, train-test split)<br>
+│   ├── model_trainer.py     # Develops, trains, and evaluates the model<br>
+├── pipeline/                # Orchestrates workflows<br>
+│   ├── __init__.py          # Initializes the pipeline package<br>
+│   ├── train_pipeline.py    # Executes training pipeline<br>
+│   ├── prediction_pipeline.py # Executes prediction pipeline<br>
+├── logger.py                # Tracks logs for debugging and analysis<br>
+├── exception.py             # Handles custom exceptions<br>
+├── utils.py                 # Contains shared utility functions<br>
     </pre>
     <p><em>Note: Project structure may have minor modifications as needed.</em></p>
 
