@@ -68,8 +68,43 @@ git config --global user.email "your-email"
         <pre>git push origin main</pre>
     </ol>
 
-    <h4>3. Install Required Libraries</h4>
-    <p>After cloning the repository, install the required libraries by running:</p>
+<h4>3. Install Required Libraries</h4>
+<p>Create requirements.txt with dependencies</p>
+pandas
+numpy
+seaborn
+matplotlib
+-e .  ## will automatically call the setup.py
+<p>After cloning the repository, install the required libraries by running:</p>
     <pre>pip install -r requirements.txt</pre>
+<h4>Setup.py Script</h4>
+The setup.py file ensures all required dependencies and metadata are specified. Below is the code included in the setup.py:<br>
+<pre>
+from setuptools import find_packages, setup
+from typing import List
+
+def get_requirements(file: str) -> List[str]:
+    """
+    Returns a list of libraries required for the project.
+    """
+    requirements = []
+    HYPHEN_DOT_E = "-e ."
+    with open(file, 'r') as f:
+        requirements = f.readlines()
+        requirements = [req.replace("\n", "") for req in requirements]
+        if HYPHEN_DOT_E in requirements:
+            requirements.remove(HYPHEN_DOT_E)
+    return requirements
+
+setup(
+    name="Advanced_Credit_Card_Fraud_Detection",
+    version="1.0",
+    author="Suhaib Mukhtar",
+    author_email="suhaibmukhtar2@gmail.com",
+    packages=find_packages(),
+    install_requires=get_requirements("requirements.txt")
+)
+</pre>
+
 </body>
 </html>
