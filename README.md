@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Advanced Credit Card Fraud Detection</title>
-</head>
 <body>
     <h1>Advanced Credit Card Fraud Detection</h1>
     <h3>Overview of Project</h3>
