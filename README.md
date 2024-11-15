@@ -21,7 +21,7 @@
 
     <h2>Project Structure</h2>
     <pre>
-src/
+src/<br>
 ├── __init__.py              # Initializes the package<br>
 ├── components/              # Contains modular components<br>
 │   ├── __init__.py          # Initializes the components package<br>
