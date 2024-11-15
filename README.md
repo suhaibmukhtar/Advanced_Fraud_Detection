@@ -130,5 +130,8 @@ if __name__ == "__main__":
 
 <h4>Exception Handling<h4>
 Custom exceptions are handled using exception.py. The sys.exc_info() function is used to capture exception details such as type, message, and traceback for debugging.
+
+
+<h2> Continue............</h2>
 </body>
 </html>
