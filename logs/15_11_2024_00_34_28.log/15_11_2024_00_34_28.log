@@ -1,0 +1,2 @@
+[ 2024-11-15 00:34:28,847 ] 78 root - INFO -Started the Project pipeline
+[ 2024-11-15 00:34:28,847 ] 65 root - INFO -Excetion Type is: <class 'ZeroDivisionError'>,Exception message is: division by zero. Exception has occured in File: C:\Users\suhaib mukhtar\A_Machine Learning\Advanced_Credit_Card\src\exception.py, in line no: 80, inside function: <module>
