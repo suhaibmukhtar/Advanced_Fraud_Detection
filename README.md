@@ -16,8 +16,7 @@
         with other applications and providing a scalable solution for real-world implementation.
     </p>
 
-    <h2>Project Structure</h2>
-    <pre>
+<h3>Project Structure</h3>
 src/<br>
 ├── __init__.py              # Initializes the package<br>
 ├── components/              # Contains modular components<br>
