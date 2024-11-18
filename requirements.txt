@@ -3,4 +3,8 @@ pandas
 matplotlib
 seaborn
 scikit-learn
+shap
+imblearn
+xgboost
+pytz
 -e .

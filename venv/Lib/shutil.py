@@ -526,9 +526,6 @@ def copytree(src, dst, symlinks=False, ignore=None, copy_function=copy2,
              ignore_dangling_symlinks=False, dirs_exist_ok=False):
     """Recursively copy a directory tree and return the destination directory.
 
-    dirs_exist_ok dictates whether to raise an exception in case dst or any
-    missing parent directory already exists.
-
     If exception(s) occur, an Error is raised with a list of reasons.
 
     If the optional symlinks flag is true, symbolic links in the
@@ -559,6 +556,11 @@ def copytree(src, dst, symlinks=False, ignore=None, copy_function=copy2,
     destination path as arguments. By default, copy2() is used, but any
     function that supports the same signature (like copy()) can be used.
 
+    If dirs_exist_ok is false (the default) and `dst` already exists, a
+    `FileExistsError` is raised. If `dirs_exist_ok` is true, the copying
+    operation will continue if it encounters existing directories, and files
+    within the `dst` tree will be overwritten by corresponding files from the
+    `src` tree.
     """
     sys.audit("shutil.copytree", src, dst)
     with os.scandir(src) as itr:
@@ -1189,7 +1191,7 @@ def _unpack_zipfile(filename, extract_dir):
     finally:
         zip.close()
 
-def _unpack_tarfile(filename, extract_dir):
+def _unpack_tarfile(filename, extract_dir, *, filter=None):
     """Unpack tar/tar.gz/tar.bz2/tar.xz `filename` to `extract_dir`
     """
     import tarfile  # late import for breaking circular dependency
@@ -1199,7 +1201,7 @@ def _unpack_tarfile(filename, extract_dir):
         raise ReadError(
             "%s is not a compressed or uncompressed tar file" % filename)
     try:
-        tarobj.extractall(extract_dir)
+        tarobj.extractall(extract_dir, filter=filter)
     finally:
         tarobj.close()
 
@@ -1227,7 +1229,7 @@ def _find_unpack_format(filename):
                 return name
     return None
 
-def unpack_archive(filename, extract_dir=None, format=None):
+def unpack_archive(filename, extract_dir=None, format=None, *, filter=None):
     """Unpack an archive.
 
     `filename` is the name of the archive.
@@ -1241,6 +1243,9 @@ def unpack_archive(filename, extract_dir=None, format=None):
     was registered for that extension.
 
     In case none is found, a ValueError is raised.
+
+    If `filter` is given, it is passed to the underlying
+    extraction function.
     """
     sys.audit("shutil.unpack_archive", filename, extract_dir, format)
 
@@ -1250,6 +1255,10 @@ def unpack_archive(filename, extract_dir=None, format=None):
     extract_dir = os.fspath(extract_dir)
     filename = os.fspath(filename)
 
+    if filter is None:
+        filter_kwargs = {}
+    else:
+        filter_kwargs = {'filter': filter}
     if format is not None:
         try:
             format_info = _UNPACK_FORMATS[format]
@@ -1257,7 +1266,7 @@ def unpack_archive(filename, extract_dir=None, format=None):
             raise ValueError("Unknown unpack format '{0}'".format(format)) from None
 
         func = format_info[1]
-        func(filename, extract_dir, **dict(format_info[2]))
+        func(filename, extract_dir, **dict(format_info[2]), **filter_kwargs)
     else:
         # we need to look at the registered unpackers supported extensions
         format = _find_unpack_format(filename)
@@ -1265,7 +1274,7 @@ def unpack_archive(filename, extract_dir=None, format=None):
             raise ReadError("Unknown archive format '{0}'".format(filename))
 
         func = _UNPACK_FORMATS[format][1]
-        kwargs = dict(_UNPACK_FORMATS[format][2])
+        kwargs = dict(_UNPACK_FORMATS[format][2]) | filter_kwargs
         func(filename, extract_dir, **kwargs)
 
 

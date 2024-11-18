@@ -48,7 +48,7 @@ information about them
 
 # divide(10, 0)
 import sys
-from src.logger import logging
+import logging
 
 #this is called when exception occurs in our code and to handle that this function is used
 #error_detail: Accepts the sys module to use its exc_info() function, which is required to get 

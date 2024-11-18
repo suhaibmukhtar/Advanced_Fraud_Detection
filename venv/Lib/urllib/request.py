@@ -2564,6 +2564,7 @@ def _proxy_bypass_macosx_sysconf(host, proxy_settings):
     }
     """
     from fnmatch import fnmatch
+    from ipaddress import AddressValueError, IPv4Address
 
     hostonly, port = _splitport(host)
 
@@ -2580,20 +2581,17 @@ def _proxy_bypass_macosx_sysconf(host, proxy_settings):
             return True
 
     hostIP = None
+    try:
+        hostIP = int(IPv4Address(hostonly))
+    except AddressValueError:
+        pass
 
     for value in proxy_settings.get('exceptions', ()):
         # Items in the list are strings like these: *.local, 169.254/16
         if not value: continue
 
         m = re.match(r"(\d+(?:\.\d+)*)(/\d+)?", value)
-        if m is not None:
-            if hostIP is None:
-                try:
-                    hostIP = socket.gethostbyname(hostonly)
-                    hostIP = ip2num(hostIP)
-                except OSError:
-                    continue
-
+        if m is not None and hostIP is not None:
             base = ip2num(m.group(1))
             mask = m.group(2)
             if mask is None:
@@ -2613,6 +2611,31 @@ def _proxy_bypass_macosx_sysconf(host, proxy_settings):
         elif fnmatch(host, value):
             return True
 
+    return False
+
+
+# Same as _proxy_bypass_macosx_sysconf, testable on all platforms
+def _proxy_bypass_winreg_override(host, override):
+    """Return True if the host should bypass the proxy server.
+
+    The proxy override list is obtained from the Windows
+    Internet settings proxy override registry value.
+
+    An example of a proxy override value is:
+    "www.example.com;*.example.net; 192.168.0.1"
+    """
+    from fnmatch import fnmatch
+
+    host, _ = _splitport(host)
+    proxy_override = override.split(';')
+    for test in proxy_override:
+        test = test.strip()
+        # "<local>" should bypass the proxy server for all intranet addresses
+        if test == '<local>':
+            if '.' not in host:
+                return True
+        elif fnmatch(host, test):
+            return True
     return False
 
 
@@ -2672,22 +2695,26 @@ elif os.name == 'nt':
                 # Returned as Unicode but problems if not converted to ASCII
                 proxyServer = str(winreg.QueryValueEx(internetSettings,
                                                        'ProxyServer')[0])
-                if '=' in proxyServer:
-                    # Per-protocol settings
-                    for p in proxyServer.split(';'):
-                        protocol, address = p.split('=', 1)
-                        # See if address has a type:// prefix
-                        if not re.match('(?:[^/:]+)://', address):
-                            address = '%s://%s' % (protocol, address)
-                        proxies[protocol] = address
-                else:
-                    # Use one setting for all protocols
-                    if proxyServer[:5] == 'http:':
-                        proxies['http'] = proxyServer
-                    else:
-                        proxies['http'] = 'http://%s' % proxyServer
-                        proxies['https'] = 'https://%s' % proxyServer
-                        proxies['ftp'] = 'ftp://%s' % proxyServer
+                if '=' not in proxyServer and ';' not in proxyServer:
+                    # Use one setting for all protocols.
+                    proxyServer = 'http={0};https={0};ftp={0}'.format(proxyServer)
+                for p in proxyServer.split(';'):
+                    protocol, address = p.split('=', 1)
+                    # See if address has a type:// prefix
+                    if not re.match('(?:[^/:]+)://', address):
+                        # Add type:// prefix to address without specifying type
+                        if protocol in ('http', 'https', 'ftp'):
+                            # The default proxy type of Windows is HTTP
+                            address = 'http://' + address
+                        elif protocol == 'socks':
+                            address = 'socks://' + address
+                    proxies[protocol] = address
+                # Use SOCKS proxy for HTTP(S) protocols
+                if proxies.get('socks'):
+                    # The default SOCKS proxy type of Windows is SOCKS4
+                    address = re.sub(r'^socks://', 'socks4://', proxies['socks'])
+                    proxies['http'] = proxies.get('http') or address
+                    proxies['https'] = proxies.get('https') or address
             internetSettings.Close()
         except (OSError, ValueError, TypeError):
             # Either registry key not found etc, or the value in an
@@ -2710,7 +2737,7 @@ elif os.name == 'nt':
             import winreg
         except ImportError:
             # Std modules, so should be around - but you never know!
-            return 0
+            return False
         try:
             internetSettings = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
                 r'Software\Microsoft\Windows\CurrentVersion\Internet Settings')
@@ -2720,40 +2747,10 @@ elif os.name == 'nt':
                                                      'ProxyOverride')[0])
             # ^^^^ Returned as Unicode but problems if not converted to ASCII
         except OSError:
-            return 0
+            return False
         if not proxyEnable or not proxyOverride:
-            return 0
-        # try to make a host list from name and IP address.
-        rawHost, port = _splitport(host)
-        host = [rawHost]
-        try:
-            addr = socket.gethostbyname(rawHost)
-            if addr != rawHost:
-                host.append(addr)
-        except OSError:
-            pass
-        try:
-            fqdn = socket.getfqdn(rawHost)
-            if fqdn != rawHost:
-                host.append(fqdn)
-        except OSError:
-            pass
-        # make a check value list from the registry entry: replace the
-        # '<local>' string by the localhost entry and the corresponding
-        # canonical entry.
-        proxyOverride = proxyOverride.split(';')
-        # now check if we match one of the registry values.
-        for test in proxyOverride:
-            if test == '<local>':
-                if '.' not in rawHost:
-                    return 1
-            test = test.replace(".", r"\.")     # mask dots
-            test = test.replace("*", r".*")     # change glob sequence
-            test = test.replace("?", r".")      # change glob char
-            for val in host:
-                if re.match(test, val, re.I):
-                    return 1
-        return 0
+            return False
+        return _proxy_bypass_winreg_override(host, proxyOverride)
 
     def proxy_bypass(host):
         """Return True, if host should be bypassed.
